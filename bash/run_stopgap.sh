@@ -27,7 +27,7 @@ mem_limit='8G'             # Amount of memory per node (G = gigabytes). Ignored 
 wall_time=604800            # Maximum run time in seconds (max = 604800 seconds). Ignored for local jobs.
 
 ##### DIRECTORIES #####
-rootdir='/fs/pool/pool-plitzko/will_wan/HIV_testset/subtomo/flo_align/sg_0.7/test/bin8/init_ref/'    # Main subtomogram averaging directory
+rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 paramfilename='params/subtomo_param.star'          # Relative path to stopgap parameter file. 
 
 

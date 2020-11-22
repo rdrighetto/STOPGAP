@@ -11,7 +11,7 @@ set -o nounset      # Crash on unset variables
 # WW 07-2017
 
 ##### EXTRACTION OPTIONS #####
-rootdir='/fs/pool/pool-plitzko/will_wan/HIV_testset/subtomo/flo_align/sg_0.7/test/bin8/init_ref/' # Subtomogram averaging folder
+rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 motl_name='allmotl_1.star'                                                                 # Name of motivelist
 tomo_dir='/fs/pool/pool-plitzko/will_wan/HIV_testset/tomo/flo/bin8_novactf/'  # Tomogram folder
 tomo_digits=1                                                                              # Number of digits in tomogram name

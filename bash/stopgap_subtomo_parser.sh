@@ -26,7 +26,7 @@ set -o nounset      # Crash on unset variables
 param_name='params/subtomo_mra_param.star'
 
 # Directory options
-rootdir='/fs/gpfs06/lv03/fileset01/pool/pool-plitzko/will_wan/empiar_10064/subtomo/mixedCTF/bin2/sg_0.7/'  # Root subtomogram averaging directory
+rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 tempdir='none'                                  # Relative path to temporary directory
 commdir='none'                                  # Relative path to communication directory
 rawdir='none'                                   # Relative path to raw files

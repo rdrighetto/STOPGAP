@@ -15,7 +15,7 @@ set -o nounset      # Crash on unset variables
 param_name='params/tm_param.star'            # Name of the parameter .star file; if the name exists, the file is appended. File is written into the current working directory. 
 
 # Folder options
-rootdir='/fs/gpfs06/lv03/fileset01/pool/pool-plitzko/will_wan/empiar_10064/tm/sg_0.7/'    # Main subtomogram averaging folder.
+rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 tempdir='none'                                  # Relative path to temporary directory
 commdir='none'                                  # Relative path to communication directory
 listdir='none'                                  # Relative path to lists
