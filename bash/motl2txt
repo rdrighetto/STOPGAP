@@ -1,0 +1,4 @@
+#!/bin/bash
+# Converts a STOPGAP motive list (motl) to a text file with the points. This text file can later be read by IMOD e.g. with point2model.
+
+awk '($2 == 9) {print $3, $6, $7, $8}' $1 > $2
