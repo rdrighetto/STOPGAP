@@ -1,5 +1,5 @@
 #!/bin/bash
 # Converts a STOPGAP motive list (motl) to an IMOD model file. Also generates a .txt version of the points.
 
-awk '($2 == 9) {print $3, $6, $7, $8}' $1 > $2.txt
+awk '($2 == 9) {print $3, $6+$10, $7+$11, $8+$12}' $1 > $2.txt
 point2model $2.txt $2
