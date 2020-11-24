@@ -1,0 +1,4 @@
+exec/lib/stopgap
+exec/lib/stopgap_extract
+exec/lib/stopgap_parser
+exec/lib/stopgap_watcher
