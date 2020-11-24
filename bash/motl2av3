@@ -1,6 +1,7 @@
 #!/bin/bash
 # Converts a STOPGAP motive list (motl) to an AV3 text file which can be read by Chimera "Place Object" plugin. 
-# Based on MATLAB script sg_motl_stopgap_to_av3 from sg_toolbox
+# Based on MATLAB script sg_motl_stopgap_to_av3 from sg_toolbox.
+# Assumes MATLAB is available in PATH and properly configured to find sg_toolbox.
 # 
 # RDR 24/11/2020
 
