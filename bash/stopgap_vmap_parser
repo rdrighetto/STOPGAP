@@ -20,7 +20,17 @@ else
 fi
 rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 
+if [ "${lp_res}" != "none" ]; then
 
+	lp_rad=`echo "$boxsize * $pixelsize / $lp_res" | bc`
+
+fi
+
+if [ "${hp_res}" != "none" ]; then
+
+	hp_rad=`echo "$boxsize * $pixelsize / $hp_res" | bc`
+
+fi
 
 
 ########################################################################################################################################################################################################
