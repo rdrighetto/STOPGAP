@@ -6,4 +6,4 @@ motlfile=$1
 txtfile=$2
 tomonum=$3
 
-awk -v tomonum="$tomonum" '($2 == tomonum) {print $3, $6+$10, $7+$11, $8+$12}' $motlfile > $txtfile
+awk -v tomonum="$tomonum" '(NF > 1 && $2 == tomonum) {print $3, $6+$10, $7+$11, $8+$12}' $motlfile > $txtfile

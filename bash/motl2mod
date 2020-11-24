@@ -6,6 +6,6 @@ motlfile=$1
 modfile=$2
 tomonum=$3
 
-awk -v tomonum="$tomonum" '($2 == tomonum) {print $3, $6+$10, $7+$11, $8+$12}' $motlfile > "${modfile%.*}".txt
+awk -v tomonum="$tomonum" '(NF > 1 && $2 == tomonum) {print $3, $6+$10, $7+$11, $8+$12}' $motlfile > "${modfile%.*}".txt
 
 point2model "${modfile%.*}".txt $2
