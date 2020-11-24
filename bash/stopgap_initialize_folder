@@ -22,17 +22,60 @@ if [[ ${task} == 'subtomo' ]]; then
     echo "Initializing subtomogram averaging folder..."
     mkdir -p params temp comm raw ref masks lists fsc subtomograms meta
 
+    cfgfile=sg_subtomo.cfg
+   if  [ -f $cfgfile ]; then
+    echo "Config file $cfgfile already exists! Not copying template file."
+    else
+    echo "Config file $cfgfile not present. Copying template file."
+    \cp $STOPGAPHOME/../config/$cfgfile .
+    fi
+
+
 elif [[ ${task} == 'tm' ]]; then
     echo "Initializing template matching folder..."
     mkdir -p params temp comm lists tmpl masks maps meta
 
+    cfgfile=sg_tm.cfg
+   if  [ -f $cfgfile ]; then
+    echo "Config file $cfgfile already exists! Not copying template file."
+    else
+    echo "Config file $cfgfile not present. Copying template file."
+    \cp $STOPGAPHOME/../config/$cfgfile .
+    fi
+
 elif [[ ${task} == 'pca' ]]; then
     echo "Initializing PCA folder..."
     mkdir -p params temp comm raw ref masks lists subtomograms rvol pca meta
+
+    cfgfile=sg_pca.cfg
+   if  [ -f $cfgfile ]; then
+    echo "Config file $cfgfile already exists! Not copying template file."
+    else
+    echo "Config file $cfgfile not present. Copying template file."
+    \cp $STOPGAPHOME/../config/$cfgfile .
+    fi
+
 elif [[ ${task} == 'vmap' ]]; then
     echo "Initializing variance map folder..."
     mkdir -p params temp comm raw ref masks lists subtomograms meta
+
+    cfgfile=sg_vmap.cfg
+   if  [ -f $cfgfile ]; then
+    echo "Config file $cfgfile already exists! Not copying template file."
+    else
+    echo "Config file $cfgfile not present. Copying template file."
+    \cp $STOPGAPHOME/../config/$cfgfile .
+    fi
+
 else
     echo "ACHTUNG!!! Unsupported task!!! Tasks are: 'subtomo' 'tm' 'pca' 'vmap'"
     exit 1
+fi
+
+cfgfile=sg_run.cfg
+if  [ -f $cfgfile ]; then
+echo "Config file $cfgfile already exists! Not copying template file."
+else
+echo "Config file $cfgfile not present. Copying template file."
+\cp $STOPGAPHOME/../config/$cfgfile .
 fi

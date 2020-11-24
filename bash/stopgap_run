@@ -12,23 +12,16 @@ set -o nounset      # Crash on unset variables
 # parameters. These .star files can be generated using 'stopgap_job_parser.sh'.
 #
 # WW 06-2018
+# RDR 11-2020
 
-### MPI Biochem specifics ###
-# hpcl4001 queues: p.192g p.512g - 40 cores/node
-# hpcl7001 queues: p.512g - 32 cores/node
-# hpcl8001 queues: p.hpcl8 - 24 cores/node
-
-
-##### RUN OPTIONS #####
-run_type='slurm'            # Types supported are 'local', 'sge', and 'slurm', for local, SGE-cluster and slurm-cluster submissions.
-n_cores=96                 # Number of subtomogram alignment cores
-queue='p.hpcl8'              # Queue for alignment jobs. Ignored for local jobs.
-mem_limit='8G'             # Amount of memory per node (G = gigabytes). Ignored for local jobs.
-wall_time=604800            # Maximum run time in seconds (max = 604800 seconds). Ignored for local jobs.
-
-##### DIRECTORIES #####
-rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
-paramfilename='params/subtomo_param.star'          # Relative path to stopgap parameter file. 
+# Read config file. Can be given as an argument or read from the current directory.
+cfgfile=sg_run.cfg
+if [ $# -eq 0 ]; then
+    source ${cfgfile}
+else
+    source "$1"
+fi
+rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 
 
 

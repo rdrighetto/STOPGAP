@@ -9,58 +9,17 @@ set -o nounset      # Crash on unset variables
 # a complete PCA run; the old file is completely overwritten when the parser is 
 # run. 
 #
-# WW 05-2019
+# RDR 11-2020
 
-##### INPUTS #####
+# Read config file. Can be given as an argument or read from the current directory.
+cfgfile=sg_pca.cfg
+if [ $# -eq 0" ]; then
+    source ${cfgfile}
+else
+    source "$1"
+fi
+rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 
-# Parameter file name
-param_name='params/pca_param.txt'
-
-
-# Directory options
-rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
-tempdir='none'                                  # Relative path to temporary directory
-commdir='none'                                  # Relative path to communication directory
-rawdir='none'                                   # Relative path to raw files
-refdir='none'                                   # Relative path to references
-maskdir='none'                                  # Relative path to masks
-listdir='none'                                  # Relative path to lists
-subtomodir='none'                               # Relative path to subtomograms
-rvoldir='none'                                  # Relative path to pre-rotated volumes
-pcadir='none'                                   # Relative path to PCA-related files
-metadir='none'
-
-# PCA task
-pca_task='pre_rot'
-
-# Alignment parameters
-iteration=8
-motl_name='allmotl'
-wedgelist_name='wedgelist.star'
-binning=4
-
-# Volume parameters
-ref_name='ref'
-mask_name='mask.mrc'
-subtomo_name='subtomo'
-rvol_name='rvol'
-rwei_name='rwei'
-
-# PCA parameters
-filtlist_name='filter_list.star'
-data_type='awpd'
-ccmat_name='ccmatrix'
-covar_name='covar'
-n_eigs=10
-eigenvol_name='eigenvol'
-eigenfac_name='eigenfac'
-eigenval_name='eigenval'
-
-# Other parameters
-apply_laplacian=0
-scoring_fcn='pearson'     # Options are 'pearson' or 'laplacian'
-symmetry=c1
-fthresh=300
 
 
 ########################################################################################################################################################################################################

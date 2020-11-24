@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
 set -e              # Crash on error
 set -o nounset      # Crash on unset variables
+# WW 12-2018
+# RDR 11-2020
 
-## extract_subtomo.sh
-# Submission script for performing subtomogram extraction.
-# Submission script is written for local extraction using openmpi to launch the job arrays.
-#
-# To use, copy this script in the subtomogram averaging folder and run!
-#
-# WW 07-2017
+# Read config file. Can be given as an argument or read from the current directory.
+cfgfile=sg_subtomo.cfg
+if [ $# -eq 0 ]; then
+    source ${cfgfile}
+else
+    source "$1"
+fi
+rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
 
-##### EXTRACTION OPTIONS #####
-rootdir=`pwd`  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
-motl_name='allmotl_1.star'                                                                 # Name of motivelist
-tomo_dir='/fs/pool/pool-plitzko/will_wan/HIV_testset/tomo/flo/bin8_novactf/'  # Tomogram folder
-tomo_digits=1                                                                              # Number of digits in tomogram name
-subtomo_name='subtomo'                                                                     # Root-name of subtomograms.
-subtomo_digits=1                                                                           # Number of digits in subtomogram names
-boxsize=64                                                                                 # Size of subtomograms
-pixelsize=14.24                                                                                # Pixelsize of tomogram in Angstroms
-n_cores=3                                                                                  # Number of cores
 
 
 ################################################################################################################################################################
@@ -43,7 +36,7 @@ rm -rf submit_extract
 
 ##### WRITE PARAMETER FILE #####
 echo "rootdir=${rootdir}" > extract_param.txt
-echo "motl_name=${motl_name}" >> extract_param.txt
+echo "motl_name=${motl_name_extract}" >> extract_param.txt
 echo "tomo_dir=${tomo_dir}" >> extract_param.txt
 echo "tomo_digits=${tomo_digits}" >> extract_param.txt
 echo "subtomo_name=${subtomo_name}" >> extract_param.txt
