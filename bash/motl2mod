@@ -1,6 +1,8 @@
 #!/bin/bash
 # Converts a STOPGAP motive list (motl) to an IMOD model file. Also generates a .txt version of the points.
 # Usage: motl2mod <input_file> <output_file> <tomo_num>
+# 
+# RDR 24/11/2020
 
 motlfile=$1
 modfile=$2
