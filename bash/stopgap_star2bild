@@ -8,9 +8,9 @@
 # RELION is Z-Y-Z
 # https://www.ccpem.ac.uk/user_help/rotation_conventions.php
 # 
-# rln_rot = -sg_phi - 90
-# rln_psi = -sg_psi + 90
-# rln_tilt = -sg_the
+# rln_rot = sg_phi + 90
+# rln_psi = sg_psi - 90
+# rln_tilt = sg_the
 
 # module purge
 module load PYEM
@@ -27,7 +27,7 @@ echo "_rlnAngleRot #1" >> tmp.star
 echo "_rlnAnglePsi #2" >> tmp.star
 echo "_rlnAngleTilt #3" >> tmp.star
 
-# awk '{ if (NF > 1) print -$13-90, -$14+90, -$15}' $1 >> tmp.star # Not sure which one is correct (it's just a matter of sign - see above)
+# awk '{ if (NF > 1) print -$13-90, -$14+90, -$15}' $1 >> tmp.star # The sign will depend whether the angles describe the rotation of the particle to be inserted in the average, or the rotation of the reference to match the orientation of the particle.
 awk '{ if (NF > 1) print $13+90, $14-90, $15}' $1 >> tmp.star
 
 python `which star2bild.py` tmp.star $2 --apix $3 --boxsize $4
