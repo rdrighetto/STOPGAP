@@ -6,15 +6,15 @@
 %% Inputs
 
 % Tomogram files/folders
-tomo_rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-plitzko/will_wan/insitu_ribo_tm/tomo/';
-tomolist_name = 'tomolist_103.mat';
+tomo_rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-engel/210112_Titan2_Jans_cells';
+tomolist_name = 'tomolist_modified_tomonums_20210122.mat';
 imod_stack = 'df';  % Stack used for IMOD alignment. "df" for dose-filtered, 'uf' for unfiltered.
 prefix = '';
 digits = 1;
 
 % Output name
 subtomo_dir = './';
-wedgelist_name = 'wedgelist.star';
+wedgelist_name = 'wedgelist_210112.star';
 
 % CTF parameters
 voltage = 300;          % Voltage (keV)
