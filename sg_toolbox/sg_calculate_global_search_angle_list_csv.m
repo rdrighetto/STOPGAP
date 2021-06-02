@@ -19,6 +19,6 @@ p(1).phi_angiter = angiter;
 o = struct();
 o = calculate_cone_angle_list(p,o,1);
 
-writematrix(o.anglist.', csvfile);
+writematrix(transpose(round(o.anglist,2)), csvfile);
 
 end
