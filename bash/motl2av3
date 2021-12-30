@@ -9,9 +9,20 @@ motlfile=$1
 av3file=$2
 tomonum=$3
 
-awk '{ if (NF==1) print }' $motlfile > "${motlfile%.*}"_tomo${tomonum}.star
-awk -v tomonum="$tomonum" '(NF > 1 && $2 == tomonum) {print}' $motlfile >> "${motlfile%.*}"_tomo${tomonum}.star
+if [ ${3}x != 'x' ]; then
 
-newmotlfile="${motlfile%.*}"_tomo${tomonum}.star
+	awk '{ if (NF==1) print }' $motlfile > "${motlfile%.*}"_tomo${tomonum}.star
+	awk -v tomonum="$tomonum" '(NF > 1 && $2 == tomonum) {print}' $motlfile >> "${motlfile%.*}"_tomo${tomonum}.star
+
+	newmotlfile="${motlfile%.*}"_tomo${tomonum}.star
+
+else
+
+	newmotlfile=$1
+
+fi
+
+
+
 
 matlab -batch "sg_motl_stopgap_to_av3('$newmotlfile','$av3file')"
