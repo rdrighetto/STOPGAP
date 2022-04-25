@@ -8,14 +8,14 @@
 %% Inputs
 
 % Motivelist names
-input_motl = 'allmotl_pdb_1.star';
-output_motl = 'allmotl_pdb_dclean4_1.star';
+input_motl = 'rails-spline_bin4_motl_17.star';
+output_motl = 'rails-spline_bin4_motl_17-clean-dist8.star';
 
 % Distance cutoff (pixels)
-d_cut = 4;
+d_cut = 8;
 
 % Score cutoff
-s_cut = 0.4;
+s_cut = 0.1;
 
 
 %% Intialize

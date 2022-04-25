@@ -8,7 +8,7 @@
 %% Inputs
 
 % Root directory
-rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-engel/201022_Jans_cells_2/processing/template_matching/hdcr_subtomoref/';
+rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-engel/Chlamy_IFT/Ricardo_PaperRevisions/template_matching/';
 
 % Parameter file
 paramfilename = 'params/tm_param.star';
@@ -18,15 +18,15 @@ proc_idx = [];  % Which lines of the paramfile to process. Leave blank ([]) to p
 
 
 % Output files
-output_motl = 'lists/hdcr_tm_dist5_motl_1.star';
+output_motl = 'analysis/TM_peaks_dist4_thr0.1.star';
 split_halfsets=1;   % Split odd/even halfsets
 
 % Threshold parameters
 plot_values = false;        % Plot sorted values and take input threshold
-threshold = 0.10;
+threshold = 0.1;
 
 % Particle paramters
-d_cut = 5;     % Distance cutoff
+d_cut = 4;     % Distance cutoff
 cluster_size = [0,0];   % [min,max] values to define a cluster. Setting each parameter to 0 disables it.
 n_particles = 0;    % Number of particles to return. Set to 0 to disable.
 
