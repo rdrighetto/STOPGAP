@@ -93,7 +93,7 @@ elif [ "${run_type}" = "slurm" ]; then
     chmod +x submit_stopgap
     
     # Submission command
-    submit_cmd="sbatch submit_stopgap"
+    submit_cmd="sbatch --export=ALL submit_stopgap"
 
 else
     echo 'ACHTUNG!!! Invalid run_type!!!'
