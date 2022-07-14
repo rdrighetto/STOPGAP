@@ -15,6 +15,14 @@ set -o nounset      # Crash on unset variables
 # RDR 11-2020
 
 # Read config file. Can be given as an argument or read from the current directory.
+
+# Check if we are on sciCORE cluster:
+if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then 
+    ml purge
+    ml load MCR/9.0
+    ml load OpenMPI/4.1.1-GCC-10.3.0
+fi
+
 cfgfile=sg_run.cfg
 if [ $# -eq 0 ]; then
     source ${cfgfile}
@@ -22,8 +30,6 @@ else
     source "$1"
 fi
 rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as the directory from which the script is called)
-
-
 
 
 
@@ -80,13 +86,18 @@ elif [ "${run_type}" = "slurm" ]; then
     # Write submission script
     echo "#! /usr/bin/env bash" > submit_stopgap
     echo "#SBATCH -D ${rootdir}" >> submit_stopgap
-    echo "#SBATCH -e error_stopgap" >> submit_stopgap
-    echo "#SBATCH -o log_stopgap" >> submit_stopgap
+    echo "#SBATCH -e error_stopgap.job%j" >> submit_stopgap
+    echo "#SBATCH -o log_stopgap.job%j" >> submit_stopgap
     echo "#SBATCH -J stopgap_subtomo" >> submit_stopgap
     echo "#SBATCH --partition=${queue} " >> submit_stopgap
+    echo "#SBATCH --qos=${qos}" >> submit_stopgap
     echo "#SBATCH --ntasks=${n_cores}" >> submit_stopgap
     echo "#SBATCH --mem-per-cpu=${mem_limit}" >> submit_stopgap
     echo "#SBATCH --time=${wall_time}" >> submit_stopgap
+    echo "" >> submit_stopgap
+    # echo "ml purge" >> submit_stopgap
+    # echo "ml load MCR/9.0" >> submit_stopgap
+    # echo "ml load OpenMPI/4.1.1-GCC-10.3.0" >> submit_stopgap
     echo "srun ${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap
 
     # Make executable

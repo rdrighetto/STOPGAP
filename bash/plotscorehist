@@ -2,7 +2,14 @@
 # Plots STOPGAP score histogram from a motl using GNUPLOT
 # Based on https://stackoverflow.com/a/7454274
 
+# Check if we are on sciCORE cluster:
+if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then 
+    ml purge
+    ml load gnuplot/5.0.2-foss-2018b
+fi
+
 gnuplot -p <<EOF
+set terminal postscript noenhanced <whatever else here...>
 n=100 #number of intervals
 max=1. #max value
 min=0. #min value
