@@ -5,6 +5,9 @@
 
 # RDR 02/06/2021
 
+ml purge
+ml MATLAB
+
 angincr=$1
 csvfile=$2
 cone_search_type=$3

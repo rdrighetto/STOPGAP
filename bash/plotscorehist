@@ -9,7 +9,6 @@ if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then
 fi
 
 gnuplot -p <<EOF
-set terminal postscript noenhanced <whatever else here...>
 n=100 #number of intervals
 max=1. #max value
 min=0. #min value

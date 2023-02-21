@@ -95,16 +95,16 @@ elif [ "${run_type}" = "slurm" ]; then
     echo "#SBATCH --mem-per-cpu=${mem_limit}" >> submit_stopgap
     echo "#SBATCH --time=${wall_time}" >> submit_stopgap
     echo "" >> submit_stopgap
-    # echo "ml purge" >> submit_stopgap
-    # echo "ml load MCR/9.0" >> submit_stopgap
-    # echo "ml load OpenMPI/4.1.1-GCC-10.3.0" >> submit_stopgap
+    echo "ml purge" >> submit_stopgap
+    echo "ml load MCR/9.0" >> submit_stopgap
+    echo "ml load OpenMPI/4.1.1-GCC-10.3.0" >> submit_stopgap
     echo "srun ${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap
 
     # Make executable
     chmod +x submit_stopgap
     
     # Submission command
-    submit_cmd="sbatch --export=ALL submit_stopgap"
+    submit_cmd="sbatch submit_stopgap"
 
 else
     echo 'ACHTUNG!!! Invalid run_type!!!'
