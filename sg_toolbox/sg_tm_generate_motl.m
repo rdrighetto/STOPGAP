@@ -8,25 +8,25 @@
 %% Inputs
 
 % Root directory
-rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-engel/Chlamy_IFT/Ricardo_PaperRevisions/template_matching/';
+rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/tm_nuc_spliceosome_20230327/';
 
 % Parameter file
 paramfilename = 'params/tm_param.star';
 
 % Processing indices
-proc_idx = [];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
+proc_idx = [1,2];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
 
 
 % Output files
-output_motl = 'analysis/TM_peaks_dist4_thr0.1.star';
+output_motl = 'analysis/TM_peaks_dist12_thr_splice_ncp_1.star';
 split_halfsets=1;   % Split odd/even halfsets
 
 % Threshold parameters
 plot_values = false;        % Plot sorted values and take input threshold
-threshold = 0.1;
+threshold = 0.15;
 
 % Particle paramters
-d_cut = 4;     % Distance cutoff
+d_cut = 12;     % Distance cutoff
 cluster_size = [0,0];   % [min,max] values to define a cluster. Setting each parameter to 0 disables it.
 n_particles = 0;    % Number of particles to return. Set to 0 to disable.
 
@@ -91,7 +91,7 @@ for idx = proc_idx
     
     
     % Read template map
-    if (numel(tlist) > 1) && check_param(p(idx),'tmap_name')
+    if (numel(tlist) > 1) && sg_check_param(p(idx),'tmap_name')
         multitemp = true;
     else
         multitemp = false;
@@ -103,7 +103,7 @@ for idx = proc_idx
     
     
     % Read angle list
-    anglist = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist.anglist_name]);
+%     anglist = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist.anglist_name]);
     
     
     %%%%% Determine threshold %%%%%
@@ -249,32 +249,47 @@ for idx = proc_idx
     temp_motl.orig_z = rpos(3,:)';
     temp_motl.class = ones(n_pos,1);
 
+    for i = 1:numel(tlist)
+        anglist{i} = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist(i).anglist_name]);
+    end
+
     % Fill orientations and scores
     for i = 1:n_pos
 
         % Parse angle index
         ang_idx = omap(rpos(1,i),rpos(2,i),rpos(3,i));
-        temp_motl.phi(i) = anglist(ang_idx,1);
-        temp_motl.psi(i) = anglist(ang_idx,2);
-        temp_motl.the(i) = anglist(ang_idx,3);
+        if multitemp
+
+            temp_motl.class(i) = tmap(rpos(1,i),rpos(2,i),rpos(3,i));
+            temp_motl.phi(i) = anglist{temp_motl.class(i)}(ang_idx,1);
+            temp_motl.psi(i) = anglist{temp_motl.class(i)}(ang_idx,2);
+            temp_motl.the(i) = anglist{temp_motl.class(i)}(ang_idx,3);
+
+        else
+
+            temp_motl.phi(i) = anglist(ang_idx,1);
+            temp_motl.psi(i) = anglist(ang_idx,2);
+            temp_motl.the(i) = anglist(ang_idx,3);
+            
+        end
 
         % Parse score
         temp_motl.score(i) = smap(rpos(1,i),rpos(2,i),rpos(3,i));
         
         % Assign template/class
-        if multitemp
-            temp_motl.class(i) = tmap(rpos(1,i),rpos(2,i),rpos(3,i));
-        end
+
 
     end
 
     % Randomize Eulers by symmetry
-    temp_motl = sg_motl_randomize_eulers_by_symmetry(temp_motl,tlist.symmetry);
+    temp_motl = sg_motl_randomize_eulers_by_symmetry(temp_motl,tlist(1).symmetry);
 
     
     % Store temporary motivelist
     motl_cell{m} = temp_motl;
     m = m+1;
+
+    disp([num2str(n_pos),' particles written for tomo ',num2str(p(idx).tomo_num),'!!!']);
     
 end
 
@@ -294,10 +309,11 @@ if split_halfsets
     motl.halfset = halfset;
 end
     
-    
+   
 
 % Write output
 sg_motl_write2(output_motl,motl);
+disp([num2str(n_motl),' particles written!!!']);
 
 
 
