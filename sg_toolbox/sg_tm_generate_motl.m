@@ -8,7 +8,7 @@
 %% Inputs
 
 % Root directory
-rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/tm_nuc_spliceosome_20230327/';
+rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/20230402_cutNCPtempl/';
 
 % Parameter file
 paramfilename = 'params/tm_param.star';
@@ -18,15 +18,15 @@ proc_idx = [1,2];  % Which lines of the paramfile to process. Leave blank ([]) t
 
 
 % Output files
-output_motl = 'analysis/TM_peaks_dist12_thr_splice_ncp_1.star';
+output_motl = 'analysis/TM_peaks_dist10_thr_manual.star';
 split_halfsets=1;   % Split odd/even halfsets
 
 % Threshold parameters
-plot_values = false;        % Plot sorted values and take input threshold
+plot_values = true;        % Plot sorted values and take input threshold
 threshold = 0.15;
 
 % Particle paramters
-d_cut = 12;     % Distance cutoff
+d_cut = 10;     % Distance cutoff
 cluster_size = [0,0];   % [min,max] values to define a cluster. Setting each parameter to 0 disables it.
 n_particles = 0;    % Number of particles to return. Set to 0 to disable.
 
@@ -261,17 +261,12 @@ for idx = proc_idx
         if multitemp
 
             temp_motl.class(i) = tmap(rpos(1,i),rpos(2,i),rpos(3,i));
-            temp_motl.phi(i) = anglist{temp_motl.class(i)}(ang_idx,1);
-            temp_motl.psi(i) = anglist{temp_motl.class(i)}(ang_idx,2);
-            temp_motl.the(i) = anglist{temp_motl.class(i)}(ang_idx,3);
 
-        else
-
-            temp_motl.phi(i) = anglist(ang_idx,1);
-            temp_motl.psi(i) = anglist(ang_idx,2);
-            temp_motl.the(i) = anglist(ang_idx,3);
-            
         end
+
+        temp_motl.phi(i) = anglist{temp_motl.class(i)}(ang_idx,1);
+        temp_motl.psi(i) = anglist{temp_motl.class(i)}(ang_idx,2);
+        temp_motl.the(i) = anglist{temp_motl.class(i)}(ang_idx,3);
 
         % Parse score
         temp_motl.score(i) = smap(rpos(1,i),rpos(2,i),rpos(3,i));
