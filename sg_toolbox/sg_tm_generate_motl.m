@@ -14,7 +14,7 @@ rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/20230402_cu
 paramfilename = 'params/tm_param.star';
 
 % Processing indices
-proc_idx = [1,2];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
+proc_idx = [];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
 
 
 % Output files
