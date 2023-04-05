@@ -39,7 +39,8 @@ rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as
 
 # Path to MATLAB executables
 watcher="${STOPGAPHOME}/bin/stopgap_watcher.sh"
-subtomo="${STOPGAPHOME}/bin/stopgap_mpi_slurm.sh"
+# subtomo="${STOPGAPHOME}/bin/stopgap_mpi_slurm.sh"
+subtomo="${STOPGAPHOME}/bin/stopgap_array_slurm.sh"
 
 
 # Remove previous submission script
@@ -76,7 +77,6 @@ elif [ "${run_type}" = "sge" ]; then
     # Submission command
     submit_cmd="qsub submit_stopgap"
 
-
 elif [ "${run_type}" = "slurm" ]; then
     echo "Preparing to run stopgap on slurm-cluster..."
 
@@ -106,9 +106,71 @@ elif [ "${run_type}" = "slurm" ]; then
     # Submission command
     submit_cmd="sbatch submit_stopgap"
 
+elif [ "${run_type}" = "slurm_array" ]; then
+    echo "Preparing to run stopgap on slurm-cluster..."
+
+    # Convert seconds to minutes, taking the ceiling
+    wall_time=$(((($wall_time-1)/60)+1))
+
+    if [ ${mem_limit_array_task}x == "x" ]; then
+        mem_limit_array_task="2G" # Set a safe default
+    fi
+
+    # We split the submission scripts in two: one for the manager, which requires a lot of memory, and one for the subtasks, which typically require less memory.
+    # Write array tasks submission script
+    echo "#! /usr/bin/env bash" > submit_stopgap_array_task
+    echo "#SBATCH -D ${rootdir}" >> submit_stopgap_array_task
+    echo "#SBATCH -e error_stopgap_array_tasks.job%A" >> submit_stopgap_array_task
+    echo "#SBATCH -o log_stopgap_array_tasks.job%A" >> submit_stopgap_array_task
+    echo "#SBATCH --open-mode=append" >> submit_stopgap_array_task
+    echo "#SBATCH -J stopgap" >> submit_stopgap_array_task
+    echo "#SBATCH --partition=${queue} " >> submit_stopgap_array_task
+    echo "#SBATCH --qos=${qos}" >> submit_stopgap_array_task
+    # echo "#SBATCH --ntasks=${n_cores}" >> submit_stopgap_array_task
+    # echo "#SBATCH --mem-per-cpu=${mem_limit}" >> submit_stopgap_array_task
+    echo "#SBATCH --mem=${mem_limit_array_task}" >> submit_stopgap_array_task
+    echo "#SBATCH --array=2-${n_cores}" >> submit_stopgap_array_task
+    echo "#SBATCH --time=${wall_time}" >> submit_stopgap_array_task
+    echo "" >> submit_stopgap_array_task
+    echo "module purge" >> submit_stopgap_array_task
+    echo "module load MCR/9.0" >> submit_stopgap_array_task
+    echo "module load OpenMPI/4.1.1-GCC-10.3.0" >> submit_stopgap_array_task
+    # echo "srun ${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap_array_task
+    echo "${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap_array_task
+
+    # Make executable
+    chmod +x submit_stopgap_array_task
+
+    # Write array manager submission script
+    echo "#! /usr/bin/env bash" > submit_stopgap_array_manager
+    echo "#SBATCH -D ${rootdir}" >> submit_stopgap_array_manager
+    echo "#SBATCH -e error_stopgap_array_manager.job%A" >> submit_stopgap_array_manager
+    echo "#SBATCH -o log_stopgap_array_manager.job%A" >> submit_stopgap_array_manager
+    echo "#SBATCH --open-mode=append" >> submit_stopgap_array_manager
+    echo "#SBATCH -J stopgap" >> submit_stopgap_array_manager
+    echo "#SBATCH --partition=${queue} " >> submit_stopgap_array_manager
+    echo "#SBATCH --qos=${qos}" >> submit_stopgap_array_manager
+    # echo "#SBATCH --ntasks=${n_cores}" >> submit_stopgap_array_manager
+    # echo "#SBATCH --mem-per-cpu=${mem_limit}" >> submit_stopgap_array_manager
+    echo "#SBATCH --mem=${mem_limit}" >> submit_stopgap_array_manager
+    echo "#SBATCH --array=1-1" >> submit_stopgap_array_manager
+    echo "#SBATCH --time=${wall_time}" >> submit_stopgap_array_manager
+    echo "" >> submit_stopgap_array_manager
+    echo "module purge" >> submit_stopgap_array_manager
+    echo "module load MCR/9.0" >> submit_stopgap_array_manager
+    echo "module load OpenMPI/4.1.1-GCC-10.3.0" >> submit_stopgap_array_manager
+    # echo "srun ${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap_array_manager
+    echo "${subtomo} ${rootdir} ${paramfilename} ${n_cores}" >> submit_stopgap_array_manager
+
+    # Make executable
+    chmod +x submit_stopgap_array_manager
+    
+    # Submission command
+    submit_cmd="sbatch submit_stopgap_array_manager; sbatch submit_stopgap_array_task"
+
 else
     echo 'ACHTUNG!!! Invalid run_type!!!'
-    echo 'Only supported run_types are "local", "sge", and "slurm"!!!'
+    echo 'Only supported run_types are "local", "sge", "slurm" and "slurm_array"!!!'
     exit 1
 fi
 
