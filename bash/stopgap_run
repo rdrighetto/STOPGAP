@@ -39,8 +39,7 @@ rootdir=`pwd`/  # Root subtomogram averaging directory (automatically defined as
 
 # Path to MATLAB executables
 watcher="${STOPGAPHOME}/bin/stopgap_watcher.sh"
-# subtomo="${STOPGAPHOME}/bin/stopgap_mpi_slurm.sh"
-subtomo="${STOPGAPHOME}/bin/stopgap_array_slurm.sh"
+subtomo="${STOPGAPHOME}/bin/stopgap_mpi_slurm.sh"
 
 
 # Remove previous submission script
@@ -107,6 +106,8 @@ elif [ "${run_type}" = "slurm" ]; then
     submit_cmd="sbatch submit_stopgap"
 
 elif [ "${run_type}" = "slurm_array" ]; then
+
+    subtomo="${STOPGAPHOME}/bin/stopgap_array_slurm.sh"
     echo "Preparing to run stopgap on slurm-cluster..."
 
     # Convert seconds to minutes, taking the ceiling
