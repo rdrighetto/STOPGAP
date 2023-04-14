@@ -22,9 +22,9 @@ output_motl = 'lists/TM_peaks_dist14_thr_0.125_bin4_20deg_novactf_test.star';
 split_halfsets=1;   % Split odd/even halfsets
 
 % Threshold parameters
-interactive = false;        % Take input thresholds interactively based on plots
-plots_dir = 'plots/';       % Plots will always be saved in this directory. The script will create the directory if necessary.
-threshold = 0.2;
+interactive = true;        % Take input thresholds interactively based on plots
+threshold = 0.2;           % Only pick particles with a CC score above this threshold. This value here is only used if interactive = false, otherwise you will be asked to provide the threshold for each tomogram;
+plots_dir = 'plots/';      % Plots will always be saved in this directory. The script will create the directory if necessary.
 
 % Particle paramters
 d_cut = 14;     % Distance cutoff
@@ -110,7 +110,7 @@ for idx = proc_idx
     sval = sort(smap(smap > 0));
     if interactive
         disp('Plotting sorted non-zero CC values...');
-        disp('The approximately correct threshold is the y-value where the straight line starts after the bend (right-hand side)');
+        disp('The approximate correct threshold is the y-value where the straight line starts after the bend (right-hand side)');
 
         % Find non-zero values
 
@@ -181,7 +181,8 @@ for idx = proc_idx
 
 
         %%%%% Distance thresholding %%%%%
-        disp('Finding clusters...');
+        disp('Finding clusters within distance constraints...');
+        disp('This might take a while :-)');
         % tic
         % c_step = n_vox/50;
         % c = c_step;
