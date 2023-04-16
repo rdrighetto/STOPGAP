@@ -14,7 +14,7 @@ rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/ricardo_tes
 paramfilename = 'params/tm_param_bin4_20deg_novactf.star';
 
 % Processing indices
-proc_idx = [1];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
+proc_idx = [];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
 
 
 % Output files
