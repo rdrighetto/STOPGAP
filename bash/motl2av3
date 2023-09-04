@@ -9,6 +9,12 @@ motlfile=$1
 av3file=$2
 tomonum=$3
 
+# Check if we are on sciCORE cluster:
+if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then 
+    ml purge
+    ml load MATLAB/2020b
+fi
+
 if [ ${3}x != 'x' ]; then
 
 	awk '{ if (NF==1) print }' $motlfile > "${motlfile%.*}"_tomo${tomonum}.star
@@ -22,7 +28,4 @@ else
 
 fi
 
-
-
-
-matlab -batch "sg_motl_stopgap_to_av3('$newmotlfile','$av3file')"
+matlab -nojvm -batch "sg_motl_stopgap_to_av3('$newmotlfile','$av3file')"

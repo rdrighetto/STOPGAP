@@ -11,4 +11,4 @@ maskname=$3
 txtname="${modname%.*}".txt
 model2point ${modname} ${txtname}
 
-matlab -batch "mask = sg_tm_create_boundary_mask('$tomoname','$txtname'); sg_mrcwrite('$maskname',mask);"
+matlab -nojvm -batch "mask = sg_tm_create_boundary_mask('$tomoname','$txtname'); sg_mrcwrite('$maskname',mask);"

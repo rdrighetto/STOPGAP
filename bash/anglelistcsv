@@ -14,4 +14,4 @@ if [ $# -lt 3 ]; then
 	cone_search_type='complete'
 
 fi
-matlab -batch "sg_calculate_global_search_angle_list_csv($angincr,'$csvfile','$cone_search_type')"
+matlab -nojvm -batch "sg_calculate_global_search_angle_list_csv($angincr,'$csvfile','$cone_search_type')"
