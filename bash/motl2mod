@@ -10,4 +10,4 @@ tomonum=$3
 
 awk -v tomonum="$tomonum" '(NF > 1 && $2 == tomonum) {print $3, $6+$10, $7+$11, $8+$12}' $motlfile > "${modfile%.*}".txt
 
-point2model -scat -circle 5 "${modfile%.*}".txt $2
+point2model -scat -circle 10 "${modfile%.*}".txt $2

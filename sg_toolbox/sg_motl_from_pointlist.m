@@ -44,6 +44,7 @@ z_shift = pointlist(:,3) - orig_z;
 
 
 % Fill fields
+motl = sg_motl_fill_field(motl,'motl_idx',(1:n_motls));
 motl = sg_motl_fill_field(motl,'tomo_num',tomo_num);
 motl = sg_motl_fill_field(motl,'object',1);
 motl = sg_motl_fill_field(motl,'subtomo_num',(1:n_motls));

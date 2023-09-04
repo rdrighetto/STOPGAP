@@ -12,7 +12,11 @@ tomonum=$3
 # Check if we are on sciCORE cluster:
 if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then 
     ml purge
+<<<<<<< HEAD
     ml load MATLAB/2020b
+=======
+    ml load MATLAB/2021b
+>>>>>>> ea52088eec131a04600f674953752825b28811f4
 fi
 
 if [ ${3}x != 'x' ]; then

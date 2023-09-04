@@ -5,6 +5,14 @@ set -o nounset      # Crash on unset variables
 # RDR 11-2020
 
 # Read config file. Can be given as an argument or read from the current directory.
+
+# Check if we are on sciCORE cluster:
+if [ `hostname | grep bc2.ch | echo $?` -eq 0 ]; then 
+    ml purge
+    ml load MCR/9.0
+    ml load OpenMPI/4.1.1-GCC-10.3.0
+fi
+
 cfgfile=sg_subtomo.cfg
 if [ $# -eq 0 ]; then
     source ${cfgfile}

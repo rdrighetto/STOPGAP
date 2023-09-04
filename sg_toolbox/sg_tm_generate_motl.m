@@ -8,30 +8,28 @@
 %% Inputs
 
 % Root directory
-rootdir = '/fs/gpfs06/lv03/fileset01/pool/pool-engel/201022_Jans_cells_2/processing/template_matching/hdcr_subtomoref/';
+rootdir = '/scicore/home/engel0006/GROUP/pool-visprot/Alicia/STOPGAP/ricardo_tests/20230404_cutNCPtempl/';
 
 % Parameter file
-paramfilename = 'params/tm_param.star';
+paramfilename = 'params/tm_param_bin4_20deg_novactf.star';
 
 % Processing indices
 proc_idx = [];  % Which lines of the paramfile to process. Leave blank ([]) to process all indices.
 
 
 % Output files
-output_motl = 'lists/hdcr_tm_dist5_motl_1.star';
+output_motl = 'lists/TM_peaks_dist14_thr_0.125_bin4_20deg_novactf_test.star';
 split_halfsets=1;   % Split odd/even halfsets
 
 % Threshold parameters
-plot_values = false;        % Plot sorted values and take input threshold
-threshold = 0.10;
+interactive = true;        % Take input thresholds interactively based on plots
+threshold = 0.2;           % Only pick particles with a CC score above this threshold. This value here is only used if interactive = false, otherwise you will be asked to provide the threshold for each tomogram;
+plots_dir = 'plots/';      % Plots will always be saved in this directory. The script will create the directory if necessary.
 
 % Particle paramters
-d_cut = 5;     % Distance cutoff
+d_cut = 14;     % Distance cutoff
 cluster_size = [0,0];   % [min,max] values to define a cluster. Setting each parameter to 0 disables it.
 n_particles = 0;    % Number of particles to return. Set to 0 to disable.
-
-
-
 
 %% Inititalize
 
@@ -61,6 +59,7 @@ else
     max_hits = false;
 end
 
+mkdir(plots_dir);
 
 %% Process each index
 
@@ -91,7 +90,7 @@ for idx = proc_idx
     
     
     % Read template map
-    if (numel(tlist) > 1) && check_param(p(idx),'tmap_name')
+    if (numel(tlist) > 1) && sg_check_param(p(idx),'tmap_name')
         multitemp = true;
     else
         multitemp = false;
@@ -103,21 +102,26 @@ for idx = proc_idx
     
     
     % Read angle list
-    anglist = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist.anglist_name]);
+%     anglist = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist.anglist_name]);
     
     
     %%%%% Determine threshold %%%%%
     
-    if plot_values
-        disp('Plotting non-zero CC values...');
+    sval = sort(smap(smap > 0));
+    if interactive
+        disp('Plotting sorted non-zero CC values...');
+        disp('The approximate correct threshold is the y-value where the straight line starts after the bend (right-hand side)');
 
         % Find non-zero values
-        sval = sort(smap(smap > 0));
 
-        % Plot values
-        figure
+
+        f = figure;
         plot(sval);
-        scatt = gcf;
+        title([p(idx).smap_name, '_', num2str(p(idx).tomo_num), ' sorted peaks'], 'Interpreter', 'none');
+        xlabel('Sorted peak number');
+        ylabel('CC score');
+        print([plots_dir,'/', p(idx).smap_name, '_', num2str(p(idx).tomo_num),'_sorted_peaks.png'], '-dpng');
+%         scatt = gcf;
 
         % Wait for threshold input
         wait = 0;
@@ -141,95 +145,157 @@ for idx = proc_idx
             end
         end
 
-
         % Close plot
-        if ishandle(scatt)
-            close(scatt)
+        if ishandle(f)
+            close(f)
         end
+    else
+        f = figure('visible', 'off');
+        plot(sval);
+        title([p(idx).smap_name, '_', num2str(p(idx).tomo_num), ' sorted peaks'], 'Interpreter', 'none');
+        xlabel('Sorted peak number');
+        ylabel('CC score');
+        print([plots_dir,'/', p(idx).smap_name, '_', num2str(p(idx).tomo_num),'_sorted_peaks.png'], '-dpng','-r300');
     end
 
 
-    %%%% Find coordinates %%%%%
-    disp('Thresholding scores...');
+    happy = false;
+    while ~happy
+        %%%% Find coordinates %%%%%
+        disp('Thresholding scores...');
 
-    % Threshold indices
-    t_idx = find(smap(:) >= threshold);
+        % Threshold indices
+        t_idx = find(smap(:) >= threshold);
 
-    % Sort voxels by score
-    [scores,s_idx] = sort(smap(t_idx),'descend');
+        % Sort voxels by score
+        [scores,s_idx] = sort(smap(t_idx),'descend');
 
-    % Sorted indices
-    s_ind = t_idx(s_idx);       % Sort 1D indices by score
-    n_vox = numel(t_idx);
+        % Sorted indices
+        s_ind = t_idx(s_idx);       % Sort 1D indices by score
+        n_vox = numel(t_idx);
 
-    % Calculate Cartesian coordinates
-    [x,y,z] = ind2sub(size(smap),s_ind);
-    pos = cat(1,x',y',z');
-    clear x y z t_ind s_ind t_idx 
+        % Calculate Cartesian coordinates
+        [x,y,z] = ind2sub(size(smap),s_ind);
+        pos = cat(1,x',y',z');
+        clear x y z t_ind s_ind t_idx 
 
 
-    %%%%% Distance thresholding %%%%%
-    disp('Finding clusters...');
-    % tic
-    % c_step = n_vox/50;
-    % c = c_step;
+        %%%%% Distance thresholding %%%%%
+        disp('Finding clusters within distance constraints...');
+        disp('This might take a while :-)');
+        % tic
+        % c_step = n_vox/50;
+        % c = c_step;
 
-    % Hit count
-    c = 0;
+        % Hit count
+        c = 0;
 
-    keep_idx = true(n_vox,1);   % Keep track of what's already been cleared
-    hit_idx = false(n_vox,1);   % Keep track of hits in case of number of particles
+        keep_idx = true(n_vox,1);   % Keep track of what's already been cleared
+        hit_idx = false(n_vox,1);   % Keep track of hits in case of number of particles
 
-    for i = 1:n_vox
+        for i = 1:n_vox
 
-        if keep_idx(i)
+            if keep_idx(i)
 
-            % Distance
-            dist = sg_pairwise_dist(pos(:,i),pos);
+                % Distance
+                dist = sg_pairwise_dist(pos(:,i),pos);
 
-            % Find distances within threshold
-            d_idx = find(dist <= d_cut);
+                % Find distances within threshold
+                d_idx = find(dist <= d_cut);
 
-            % Keep track of clusters
-            c_size = numel(d_idx);
+                % Keep track of clusters
+                c_size = numel(d_idx);
 
-            % Check cluster 
-            c_check = true;
-            if c_size < cluster_size(1)
-                c_check = false;
-            end
-            if cluster_size(2) > 0
-                if c_size > cluster_size(2)
+                % Check cluster 
+                c_check = true;
+                if c_size < cluster_size(1)
                     c_check = false;
+                end
+                if cluster_size(2) > 0
+                    if c_size > cluster_size(2)
+                        c_check = false;
+                    end
+                end
+
+                % Clear values
+                keep_idx(d_idx) = false;
+
+                % Keep if cluster check passes
+                if c_check
+                    keep_idx(i) = true;
+                    hit_idx(i) = true;
+                    c = c+1;
+                end
+
+
+            end
+
+            % Check for early termination
+            if max_hits
+                if c >= n_particles
+                    break
                 end
             end
 
-            % Clear values
-            keep_idx(d_idx) = false;
-
-            % Keep if cluster check passes
-            if c_check
-                keep_idx(i) = true;
-                hit_idx(i) = true;
-                c = c+1;
-            end
-
-
         end
 
-        % Check for early termination
-        if max_hits
-            if c >= n_particles
-                break
-            end
+        % Remaining positions
+        rpos = pos(:,hit_idx);
+        n_pos = sum(hit_idx);
+
+        scores = zeros(n_pos,1);
+        for i = 1:n_pos
+            scores(i) = smap(rpos(1,i),rpos(2,i),rpos(3,i));
         end
 
+
+        if interactive
+            disp('Plotting histogram of surviving peaks after distance cleaning!')
+            f = figure;
+        else
+            f = figure('visible', 'off');
+        end
+        histogram(scores);
+    %     title([smap_files(i).name, ' peaks histogram after distance cleaning'], 'Interpreter', 'none');
+        title([p(idx).smap_name, '_', num2str(p(idx).tomo_num), ' peaks histogram'], 'Interpreter', 'none');
+        xlabel('CC score');
+        ylabel('Peak count');
+        print([plots_dir,'/', p(idx).smap_name, '_', num2str(p(idx).tomo_num),'_histogram.png'], '-dpng','-r300');
+
+        if interactive
+            % Wait for threshold input
+            wait = 0;
+            while wait == 0;
+                % Wait for user input
+                assess_string = input('\nAre you happy with the threshold? Press Enter if yes, or give new CC threshold!!!\n','s'); 
+
+                % Empty string
+                if isempty(assess_string) 
+                    fprintf('Continuing with the threshold of %.3f!!! \n', threshold);  
+                    happy = true;  
+                    wait = 1;    
+                else
+
+                    % Check input is only digits
+                    isstr = isstrprop(assess_string, 'digit') + isstrprop(assess_string, 'punct') - isstrprop(assess_string,'wspace');
+                    if (sum(isstr) == numel(assess_string)) && (numel(assess_string) ~= 0)
+                        threshold = str2double(assess_string);
+                        wait = 1;
+                    else
+                        disp('Unacceptable!!!')
+
+                    end
+                end
+            end
+        else
+            happy = true;
+        end
+
+        % Close plot
+        if ishandle(f)
+            close(f)
+        end
     end
-
-    % Remaining positions
-    rpos = pos(:,hit_idx);
-    n_pos = sum(hit_idx);
-
 
 
     %%%%% Generate motivelist %%%%%
@@ -249,32 +315,42 @@ for idx = proc_idx
     temp_motl.orig_z = rpos(3,:)';
     temp_motl.class = ones(n_pos,1);
 
+    for i = 1:numel(tlist)
+        anglist{i} = csvread([p(idx).rootdir,'/',o.listdir,'/',tlist(i).anglist_name]);
+    end
+
     % Fill orientations and scores
     for i = 1:n_pos
 
         % Parse angle index
         ang_idx = omap(rpos(1,i),rpos(2,i),rpos(3,i));
-        temp_motl.phi(i) = anglist(ang_idx,1);
-        temp_motl.psi(i) = anglist(ang_idx,2);
-        temp_motl.the(i) = anglist(ang_idx,3);
+        if multitemp
+
+            temp_motl.class(i) = tmap(rpos(1,i),rpos(2,i),rpos(3,i));
+
+        end
+
+        temp_motl.phi(i) = anglist{temp_motl.class(i)}(ang_idx,1);
+        temp_motl.psi(i) = anglist{temp_motl.class(i)}(ang_idx,2);
+        temp_motl.the(i) = anglist{temp_motl.class(i)}(ang_idx,3);
 
         % Parse score
         temp_motl.score(i) = smap(rpos(1,i),rpos(2,i),rpos(3,i));
         
         % Assign template/class
-        if multitemp
-            temp_motl.class(i) = tmap(rpos(1,i),rpos(2,i),rpos(3,i));
-        end
+
 
     end
 
     % Randomize Eulers by symmetry
-    temp_motl = sg_motl_randomize_eulers_by_symmetry(temp_motl,tlist.symmetry);
+    temp_motl = sg_motl_randomize_eulers_by_symmetry(temp_motl,tlist(1).symmetry);
 
     
     % Store temporary motivelist
     motl_cell{m} = temp_motl;
     m = m+1;
+
+    disp([num2str(n_pos),' particles written for tomo ',num2str(p(idx).tomo_num),'!!!']);
     
 end
 
@@ -294,10 +370,11 @@ if split_halfsets
     motl.halfset = halfset;
 end
     
-    
+   
 
 % Write output
 sg_motl_write2(output_motl,motl);
+disp([num2str(n_motl),' particles written!!!']);
 
 
 

@@ -16,14 +16,14 @@
 %% Inputs
 
 % Input folder
-metadata_folder = 'filaments/featureA/';
+metadata_folder = 'tracing/';
 
 % Center root name
-tracer_root = 'featureA';
+tracer_root = 'cable';
 tracer_type = 'txt';    % txt or cmm
 
 % Reconstruction list
-rlist_name = 'recons_list.txt';
+rlist_name = 'recons_list_cable.txt';
 
 % Distances
 dist = 2;    % Distance along filament axis
@@ -36,12 +36,12 @@ phi_angle_type = 'rand';
 
 
 % Tomogram dir
-tomo_dir = '/fs/pool/pool-engel/201022_Jans_cells_2/bin4_novactf/';
+tomo_dir = '/fs/pool/pool-engel/righetto/mito_florent/Position_16_rdr/stopgap_subtomo/bin4_tomo/';
 digits = 1;
 padding = 10;    % Size of the edge boundary for thresholding; any centers within the boundary are removed.
 
 % Output name
-output_name = 'filaments-spline_motl_1.star';
+output_name = 'cable-spline_motl_1.star';
 
 
 %% Initialize
