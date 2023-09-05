@@ -1,3 +1,4 @@
 compile_parser
 compile_stopgap
 compile_watcher
+compile_extract
