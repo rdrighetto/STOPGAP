@@ -8,7 +8,7 @@ function param = sg_read_subtomo_param(rootdir,paramfilename)
 
 % Read .star file
 try
-    s = stopgap_star_read([rootdir,paramfilename], false, [], 'stopgap_subtomo_parameters');
+    s = stopgap_star_read([rootdir,'/',paramfilename], false, [], 'stopgap_subtomo_parameters');
 catch
     error(['ACHTUNG!!! Error reading ',paramfilename,'!!!']);
 end
